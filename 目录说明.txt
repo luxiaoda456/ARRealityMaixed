@@ -6,4 +6,4 @@ fenzi.html：教学页面，fenzi.html，分子是分子结构的教程包含模
 3、client.html:                        学生端
 4、clientcamera.html:             相机采集端  -独立html
 5、js/fenzi 分子脚本处理
----
+6、-缺少自动校准的功能，有人能补充上就完美了
