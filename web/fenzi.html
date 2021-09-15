@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - molecules</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0;
+				
+				font-family: Arial;
+				overflow: hidden;
+			}
+			a {
+				color: #ffffff;
+			}
+			#menu2 {
+				position: absolute;
+				bottom: 20px;
+				width: 100%;
+				text-align: center;
+				padding: 0;
+				margin: 0;
+			}
+			#menu {
+				position: absolute;
+				top: 30px;
+				width: 100%;
+				text-align: center;
+				padding: 0;
+				margin: 0;
+			}
+			button {
+				color: rgb(0,0,0);
+				background: transparent;
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,1);
+			}
+
+			.label {
+				text-shadow: -1px 1px 1px rgb(0,0,0);
+				margin-left: 25px;
+			}
+
+		    .player {
+		          position: absolute;
+		          left: 0;
+		          top: 0;
+		          right: auto;
+		          bottom: auto;
+		          width: 100%;
+		          height: 100%;
+		          background-color: white;
+		      }
+		    #container {
+				position: absolute;
+
+			}
+			.center{
+				margin:0px auto;
+			}
+
+
+
+			#info {
+				position: absolute;
+				width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family: Monospace;
+				font-size: 13px;
+				font-weight: bold;
+				text-align: center;
+				z-index: 1;
+			}
+			.element {
+				width: 120px;
+				height: 160px;
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+				border: 1px solid rgba(127,255,255,0.25);
+				text-align: center;
+				cursor: default;
+			}
+
+			.element:hover {
+				box-shadow: 2px 2px 14px rgba(0,255,255,0.75);
+				border: .1px solid rgba(255,255,0,0.75);
+			}
+
+			.element .number {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+				font-size: 12px;
+				color: rgba(127,255,255,0.75);
+			}
+
+			.element .symbol {
+				position: absolute;
+				top: 40px;
+				left: 0px;
+				right: 0px;
+				font-size: 60px;
+				font-weight: bold;
+				color: rgba(255,255,255,0.75);
+				text-shadow: 0 0 10px rgba(0,255,255,0.95);
+			}
+
+			.element .details {
+				position: absolute;
+				bottom: 15px;
+				left: 0px;
+				right: 0px;
+				font-size: 12px;
+				color: rgba(127,255,255,0.75);
+			}
+		</style>
+	</head>
+	<body>
+		<video id="video" muted =true autoplay="autoplay" playsinline ></video>
+	    <div id="beforeLayer" style="position: absolute;width: 100%;height: 100%;background: url('./assets/textures/back.png')  no-repeat;background-position: bottom left;"></div>
+		<div id="container"  tabindex="10"><div id="containercss"  tabindex="10"></div></div>
+	 	<div id="menu2"></div>
+	    <div id="menu" >
+	        <input type="button" value="上一章" id="preChapter">
+	        <input type="button" value="下一章" id="nextChapter">
+	        <input type="button" value="上一步" id="preStep">
+	        <input type="button" value="下一步" id="nextStep">
+	        <input type="button" value="放大" id="big">
+	        <input type="button" value="缩小" id="litter">
+	        <input type="button" value="全屏" id="fullScreen">
+	        <input type="button" value="讲台" id="desk">
+	        <input type="button" value="变换" id="transform">
+     		<!--<input type="button" value="元素周期表" id="table">-->
+	    </div>
+	   
+	<script src="assets/js/three.js"></script>
+	<script src="assets/js/loaders/PDBLoader.js"></script>
+	<script src="assets/js/renderers/CSS2DRenderer.js"></script>
+
+	<script src="assets/js/controls/TransformControls.js"></script>
+		<!--加载fbx需要使用-->
+	<script src="assets/js/loaders/FBXLoader.js"></script>
+	
+	<script src="assets/js/libs/react.js"></script>
+    <script src="assets/js/libs/react-dom.js"></script>
+
+ 
+    <script src="assets/js/libs/ammo.js"></script>
+	<script src="assets/js/libs/dat.gui.min.js"></script>
+    <script src="assets/js/libs/jszip.min.js"></script>
+    <script src="assets/js/libs/inflate.min.js"></script>
+    <script src="assets/js/libs/gunzip.min.js"></script>
+
+    <script src="assets/js/libs/stats.min.js"></script>
+    <script src="assets/js/libs/SPE.js"></script>
+    <script src="assets/js/libs/VolumetricFire.js"></script>
+	<script src="assets/js/renderers/CSS3DRenderer.js"></script>
+	<script src="assets/js/libs/tween.min.js"></script>
+
+   <script src="./socket.io-client-2.0.4/dist/socket.io.js"></script>
+   <!--<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>-->
+   <script src="https://cdn.bootcdn.net/ajax/libs/adapterjs/0.15.5/adapter.min.js"></script>
+   
+   <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+   <script src="js/main.js"></script>
+   <script src="js/teacher.js"></script> 
+   <script src="js/server.js"></script>
+   <script src="js/server-teacher.js"></script>
+   <script src="js/server-client.js"></script>
+   <script src="js/server-clientPeer.js"></script>
+  	<script src="js/fenzi/pdbload.js"></script>
+  	<!-- 控制变换的代码-->
+  	<script src="js/fenzi/ComTransformControl.js"></script>
+	<script src="js/fenzi/common.js"></script>
+	<script src="js/fenzi/fenzi.js"></script>
+	<script>
+		var camera, scene, renderer, labelRenderer,raycaster;
+		var controls;
+		var fadongji=false;
+		var root,com3d;
+		var MOLECULES = {"乙醇": "ethanol.pdb","葡萄糖": "glucose.pdb","氧化铝": "Al2O3.pdb","盐": "nacl.pdb","石墨": "graphite.pdb"};
+			var loadModeIndex=0;
+	    var MOLECULESName = ["ethanol.pdb","glucose.pdb","Al2O3.pdb","nacl.pdb","graphite.pdb"];   
+	    var MOLECULESDesc = ["乙醇","葡萄糖","氧化铝","盐","石墨"];
+	    
+		var loader = new THREE.PDBLoader();
+		var earth;
+		var offset = new THREE.Vector3();
+		var clock = new THREE.Clock();
+		var mixer;//动画mixer
+		var menu = document.getElementById( 'menu2' );
+		var w=constraints.video.width;//1920;//window.innerWidth
+		var h=constraints.video.height;//1080;//window.innerHeight
+		//相机参数
+		//const cameraPara={fov:78,px:0,py:1.59,	pz:2.93,	rx:-0.42,ry:0,rz:0,zoom:2.2,cameraHelper:false,ground:false};
+		//>注意事项:虚拟相机的位置和旋转是通过棋盘格标定的，为了使虚拟相机的正方向和物理相机正方向一致，标定板需要放到舞台水平中心，地面輔助线中心线需要穿过标点板左下角并与标定板平行（可以拉一条比较长的线作为参考），注意由于相机或地面不平有可能造成相机z轴方向旋转，这种情况可以通过调整物理相机使z轴无旋转（地面参考线和标定板z轴重合后，x轴也重合时代表z轴旋转）。z轴旋转程序本身不关心，因为自动校准工具可以校准出旋转角度。
+		
+		//const cameraPara={fov:39,px:0,py:1.5,	pz:3.2,	rx:-0.35,ry:0,rz:0,cameraHelper:false};
+		//pdbload 用于加载分子pdb模型，common通用方法不限制于分子页面
+		var pdbload,common;
+		var mousedown=false;//鼠标是否按下
+		var fenzi=new FenZi();
+		fenzi.init();
+		//渲染服务器处理碰撞检测后的数据
+		const asynRaycaster=function(json){
+			fenzi.asynRaycaster(json);
+		}
+	  	//添加或删除课桌
+	  	const desk=function (data){
+			fenzi.desk(data);
+	  	};
+	  	//渲染服务器处理root变换
+		const transformRootChange=function(json){
+			fenzi.transformRootChange(json);
+		}
+	  	//渲染服务端处理课桌变换 
+	  	const transformChange=function (data){
+	  		fenzi.transformChange(data);
+	  	}
+	  	//渲染服务端处理root缩放
+	  	const setRootScale=function(myscale){
+        	fenzi.setRootScale(myscale);
+        }
+        //渲染服务端处理上一步
+        const preStep=function(){
+			fenzi.preStep();
+        }
+         //渲染服务端处理下一步
+        const nextStep=function(){
+			fenzi.nextStep();
+        }
+        //渲染服务端处理上一章，或下一章引起的模型切换
+   		const loadMolecule= function ( url,teacherModeIndex ) {
+			fenzi.loadMolecule(url,teacherModeIndex);  
+		}
+		
+		const userQuaternion=false;//是否使用四元函数
+		const userSplineCamera=false;//带辅助视角的相机
+		var cameraHelper,cameraEye,parent,splineCamera;
+		if(mode=="teacher"){
+			//const cameraPara={fov:78,px:0,py:2.5,	pz:3.5,	rx:-0.1,ry:0,rz:0};
+			//
+			//
+			parent = new THREE.Object3D();
+			scene.add( parent );
+			var aspect=16/9;//1;//1.77777;
+			splineCamera = new THREE.PerspectiveCamera( 50.625, aspect, 0.0001, 1 );
+			parent.add( splineCamera );
+
+
+
+			//cameraHelper = new THREE.CameraHelper( splineCamera );
+			var c=userSplineCamera?splineCamera:camera;
+			cameraHelper = new THREE.CameraHelper( c );
+			scene.add( cameraHelper );
+			cameraHelper.visible = userSplineCamera;
+
+			//模型眼睛的圆点
+			//cameraEye = new THREE.Mesh( new THREE.SphereGeometry( 5 ), new THREE.MeshBasicMaterial( { color: 0xdddddd } ) );
+			//scene.add( cameraEye );
+
+			//cameraEye.visible = cameraPara.cameraHelper;
+
+			var gui = new dat.GUI( { width: 300 } );
+
+			var folderGeometry = gui.addFolder( '相机参数' );
+			folderGeometry.add( cameraPara, 'fov', 0, 180 ).step(0.01).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'px', -5, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'py', -5, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'pz', -5, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			/**
+			
+			**/
+			if(userQuaternion){
+				folderGeometry.add( cameraPara, 'qx', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+				folderGeometry.add( cameraPara, 'qy', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+				folderGeometry.add( cameraPara, 'qz', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+				folderGeometry.add( cameraPara, 'qw', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+			
+			}else{
+				folderGeometry.add( cameraPara, 'rx', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+				folderGeometry.add( cameraPara, 'ry', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+				folderGeometry.add( cameraPara, 'rz', -3.14, 3.14 ).step(0.00001).onChange( function( value ) { changeCameraPara(); } );
+			}
+			//folderGeometry.add( cameraPara, 'zoom', 0, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			//folderGeometry.add( cameraPara, 'focalLength', 0, 50 ).step(0.1).onChange( function( value ) { changeCameraPara(); } );
+			
+			folderGeometry.open();
+
+			var folderCamera = gui.addFolder( '辅助工具' );
+			//folderCamera.add( cameraPara, 'cameraHelper').onChange( function( value ) { animateCamera(); } );
+			folderCamera.add( cameraPara, 'ground').onChange( function( value ) { changeCameraPara(); } );
+			//folderCamera.add( zhuyishixiang, 'tips');
+			folderCamera.open();
+		}
+		
+		/**
+		 * 修改相机参数
+		 * @param  {[type]} param [description]
+		 * @return {[type]}       [description]
+		 */
+		const changeCameraPara=function(param){
+			if(mode=="server"&&param){
+				cameraPara.focalLength=param.focalLength;
+				cameraPara.px=param.px;
+				cameraPara.py=param.py;
+				cameraPara.pz=param.pz;
+				if(userQuaternion){
+					cameraPara.qx=param.qx;
+					cameraPara.qy=param.qy;
+					cameraPara.qz=param.qz;
+					cameraPara.qw=param.qw;
+				}else{
+					
+					cameraPara.rx=param.rx;
+					cameraPara.ry=param.ry;
+					cameraPara.rz=param.rz;
+				}
+				cameraPara.zoom=param.zoom;
+				cameraPara.fov = param.fov;
+				cameraPara.ground=param.ground;		
+			}else{
+				var json={
+					event:"changeCameraPara",
+					param:cameraPara,
+				}
+				//debugger;
+				teacherDataChanger(json);
+			}
+			var tempcamera=userSplineCamera?splineCamera:camera;//splineCamera;
+			//var tempcamera=splineCamera;
+			tempcamera.fov = cameraPara.fov;
+			tempcamera.position.x = cameraPara.px;
+			tempcamera.position.y = cameraPara.py;
+			tempcamera.position.z = cameraPara.pz;
+
+			showlog('getFocalLength'+tempcamera.getFocalLength()+	";"+tempcamera.filmGauge );
+			//tempcamera.setFocalLength(cameraPara.focalLength);
+			if(userQuaternion){
+				var quaternion = new THREE.Quaternion(cameraPara.qx, cameraPara.qy, cameraPara.qz, cameraPara.qw);
+				tempcamera.quaternion.x=quaternion.x;
+				tempcamera.quaternion.y=quaternion.y;
+				tempcamera.quaternion.z=quaternion.z;
+				tempcamera.quaternion.w=quaternion.w;
+			}else{
+				tempcamera.rotation.x =cameraPara.rx;
+				tempcamera.rotation.y =cameraPara.ry;
+				tempcamera.rotation.z =cameraPara.rz;
+			}
+			tempcamera.rotation.x;
+			tempcamera.zoom =cameraPara.zoom;
+			if(cameraPara.ground){
+				fenzi.addGroundGrid();
+			}else
+				fenzi.removeGroundGrid();
+
+			tempcamera.updateProjectionMatrix();
+			//renderer.render(parent, splineCamera);
+			renderer.render(scene, tempcamera);
+			if(cameraHelper)
+				cameraHelper.update();
+		}
+		const animateCamera=function(param){	
+			cameraHelper.visible = cameraPara.cameraHelper;
+			if(mode=="server"&&param){
+				cameraPara.ground=param.ground;		
+			}else{
+				var json={
+					event:"changeCameraPara",
+					param:cameraPara,
+				}
+				//debugger;
+				teacherDataChanger(json);
+			}
+
+			if(cameraPara.ground){
+				fenzi.addGroundGrid();
+			}element
+				fenzi.removeGroundGrid();
+			//cameraEye.visible = cameraPara.cameraHelper;
+			cameraHelper.update();
+		}
+////==========================================元素周期表============
+
+		const tableshow=function(show){
+			if(show){
+				 while ( tableroot.children.length > 0 ) {
+
+			        var object = tableroot.children[ 0 ];
+			        object.parent.remove( object );
+
+			      }
+				scene.remove(tableroot);
+				tableroot=null;
+			}else{
+				initTable();
+				transform( targets.table, 2000 );
+			}
+	
+		}
+	var tableroot;
+	if(true){
+		var table = [
+				"H", "Hydrogen", "1.00794", 1, 1,
+				"He", "Helium", "4.002602", 18, 1,
+				"Li", "Lithium", "6.941", 1, 2,
+				"Be", "Beryllium", "9.012182", 2, 2,
+				"B", "Boron", "10.811", 13, 2,
+				"C", "Carbon", "12.0107", 14, 2,
+				"N", "Nitrogen", "14.0067", 15, 2,
+				"O", "Oxygen", "15.9994", 16, 2,
+				"F", "Fluorine", "18.9984032", 17, 2,
+				"Ne", "Neon", "20.1797", 18, 2,
+				"Na", "Sodium", "22.98976...", 1, 3,
+				"Mg", "Magnesium", "24.305", 2, 3,
+				"Al", "Aluminium", "26.9815386", 13, 3,
+				"Si", "Silicon", "28.0855", 14, 3,
+				"P", "Phosphorus", "30.973762", 15, 3,
+				"S", "Sulfur", "32.065", 16, 3,
+				"Cl", "Chlorine", "35.453", 17, 3,
+				"Ar", "Argon", "39.948", 18, 3,
+				"K", "Potassium", "39.948", 1, 4,
+				"Ca", "Calcium", "40.078", 2, 4,
+				"Sc", "Scandium", "44.955912", 3, 4,
+				"Ti", "Titanium", "47.867", 4, 4,
+				"V", "Vanadium", "50.9415", 5, 4,
+				"Cr", "Chromium", "51.9961", 6, 4,
+				"Mn", "Manganese", "54.938045", 7, 4,
+				"Fe", "Iron", "55.845", 8, 4,
+				"Co", "Cobalt", "58.933195", 9, 4,
+				"Ni", "Nickel", "58.6934", 10, 4,
+				"Cu", "Copper", "63.546", 11, 4,
+				"Zn", "Zinc", "65.38", 12, 4,
+				"Ga", "Gallium", "69.723", 13, 4,
+				"Ge", "Germanium", "72.63", 14, 4,
+				"As", "Arsenic", "74.9216", 15, 4,
+				"Se", "Selenium", "78.96", 16, 4,
+				"Br", "Bromine", "79.904", 17, 4,
+				"Kr", "Krypton", "83.798", 18, 4,
+				"Rb", "Rubidium", "85.4678", 1, 5,
+				"Sr", "Strontium", "87.62", 2, 5,
+				"Y", "Yttrium", "88.90585", 3, 5,
+				"Zr", "Zirconium", "91.224", 4, 5,
+				"Nb", "Niobium", "92.90628", 5, 5,
+				"Mo", "Molybdenum", "95.96", 6, 5,
+				"Tc", "Technetium", "(98)", 7, 5,
+				"Ru", "Ruthenium", "101.07", 8, 5,
+				"Rh", "Rhodium", "102.9055", 9, 5,
+				"Pd", "Palladium", "106.42", 10, 5,
+				"Ag", "Silver", "107.8682", 11, 5,
+				"Cd", "Cadmium", "112.411", 12, 5,
+				"In", "Indium", "114.818", 13, 5,
+				"Sn", "Tin", "118.71", 14, 5,
+				"Sb", "Antimony", "121.76", 15, 5,
+				"Te", "Tellurium", "127.6", 16, 5,
+				"I", "Iodine", "126.90447", 17, 5,
+				"Xe", "Xenon", "131.293", 18, 5,
+				"Cs", "Caesium", "132.9054", 1, 6,
+				"Ba", "Barium", "132.9054", 2, 6,
+				"La", "Lanthanum", "138.90547", 4, 9,
+				"Ce", "Cerium", "140.116", 5, 9,
+				"Pr", "Praseodymium", "140.90765", 6, 9,
+				"Nd", "Neodymium", "144.242", 7, 9,
+				"Pm", "Promethium", "(145)", 8, 9,
+				"Sm", "Samarium", "150.36", 9, 9,
+				"Eu", "Europium", "151.964", 10, 9,
+				"Gd", "Gadolinium", "157.25", 11, 9,
+				"Tb", "Terbium", "158.92535", 12, 9,
+				"Dy", "Dysprosium", "162.5", 13, 9,
+				"Ho", "Holmium", "164.93032", 14, 9,
+				"Er", "Erbium", "167.259", 15, 9,
+				"Tm", "Thulium", "168.93421", 16, 9,
+				"Yb", "Ytterbium", "173.054", 17, 9,
+				"Lu", "Lutetium", "174.9668", 18, 9,
+				"Hf", "Hafnium", "178.49", 4, 6,
+				"Ta", "Tantalum", "180.94788", 5, 6,
+				"W", "Tungsten", "183.84", 6, 6,
+				"Re", "Rhenium", "186.207", 7, 6,
+				"Os", "Osmium", "190.23", 8, 6,
+				"Ir", "Iridium", "192.217", 9, 6,
+				"Pt", "Platinum", "195.084", 10, 6,
+				"Au", "Gold", "196.966569", 11, 6,
+				"Hg", "Mercury", "200.59", 12, 6,
+				"Tl", "Thallium", "204.3833", 13, 6,
+				"Pb", "Lead", "207.2", 14, 6,
+				"Bi", "Bismuth", "208.9804", 15, 6,
+				"Po", "Polonium", "(209)", 16, 6,
+				"At", "Astatine", "(210)", 17, 6,
+				"Rn", "Radon", "(222)", 18, 6,
+				"Fr", "Francium", "(223)", 1, 7,
+				"Ra", "Radium", "(226)", 2, 7,
+				"Ac", "Actinium", "(227)", 4, 10,
+				"Th", "Thorium", "232.03806", 5, 10,
+				"Pa", "Protactinium", "231.0588", 6, 10,
+				"U", "Uranium", "238.02891", 7, 10,
+				"Np", "Neptunium", "(237)", 8, 10,
+				"Pu", "Plutonium", "(244)", 9, 10,
+				"Am", "Americium", "(243)", 10, 10,
+				"Cm", "Curium", "(247)", 11, 10,
+				"Bk", "Berkelium", "(247)", 12, 10,
+				"Cf", "Californium", "(251)", 13, 10,
+				"Es", "Einstenium", "(252)", 14, 10,
+				"Fm", "Fermium", "(257)", 15, 10,
+				"Md", "Mendelevium", "(258)", 16, 10,
+				"No", "Nobelium", "(259)", 17, 10,
+				"Lr", "Lawrencium", "(262)", 18, 10,
+				"Rf", "Rutherfordium", "(267)", 4, 7,
+				"Db", "Dubnium", "(268)", 5, 7,
+				"Sg", "Seaborgium", "(271)", 6, 7,
+				"Bh", "Bohrium", "(272)", 7, 7,
+				"Hs", "Hassium", "(270)", 8, 7,
+				"Mt", "Meitnerium", "(276)", 9, 7,
+				"Ds", "Darmstadium", "(281)", 10, 7,
+				"Rg", "Roentgenium", "(280)", 11, 7,
+				"Cn", "Copernicium", "(285)", 12, 7,
+				"Nh", "Nihonium", "(286)", 13, 7,
+				"Fl", "Flerovium", "(289)", 14, 7,
+				"Mc", "Moscovium", "(290)", 15, 7,
+				"Lv", "Livermorium", "(293)", 16, 7,
+				"Ts", "Tennessine", "(294)", 17, 7,
+				"Og", "Oganesson", "(294)", 18, 7
+			];
+		var objects = [];
+		var targets = { table: [], sphere: [], helix: [], grid: [] };
+		var roottable ;
+
+		var button = document.getElementById( 'table' );
+		if(button){
+			button.addEventListener( 'click', function ( event ) {
+				var show=0;//tableroot!=null&&tableroot!=undefined?0:1;
+				if(tableroot)
+					show=1;
+				tableshow(show);
+				if(mode=="teacher"){
+					var json={
+						event:"tableshow",
+						show:show,
+					}
+					//debugger;
+					teacherDataChanger(json);
+				}
+			}, false );
+		}
+
+		function initTable  (){
+			tableroot =new THREE.Group();
+			scene.add( tableroot );
+			for ( var i = 0; i < table.length; i += 5 ) {
+
+				var element = document.createElement( 'div' );
+					element.className = 'element';
+					element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+
+					var number = document.createElement( 'div' );
+					number.className = 'number';
+					number.textContent = (i/5) + 1;
+					element.appendChild( number );
+
+					var symbol = document.createElement( 'div' );
+					symbol.className = 'symbol';
+					symbol.textContent = table[ i ];
+					element.appendChild( symbol );
+
+					var details = document.createElement( 'div' );
+					details.className = 'details';
+					details.innerHTML = table[ i + 1 ] + '<br>' + table[ i + 2 ];
+					element.appendChild( details );
+
+					var object = new THREE.CSS3DObject( element );
+					object.position.x = Math.random() * 4000 - 2000;
+					object.position.y = Math.random() * 4000 - 2000;
+					object.position.z = Math.random() * 4000 - 2000;
+					tableroot.add( object );
+
+					objects.push( object );
+
+					//
+
+					var object = new THREE.Object3D();
+					object.position.x = ( table[ i + 3 ] * 140 ) - 1330;
+					object.position.y = - ( table[ i + 4 ] * 180 ) + 990;
+					object.position.z=-2000;
+					targets.table.push( object );
+
+			}
+			//transform( targets.table, 2000 );
+
+		
+		}
+		function transform( targets, duration ) {
+
+			TWEEN.removeAll();
+
+			for ( var i = 0; i < objects.length; i ++ ) {
+
+				var object = objects[ i ];
+				var target = targets[ i ];
+
+				new TWEEN.Tween( object.position )
+					.to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+					.easing( TWEEN.Easing.Exponential.InOut )
+					.start();
+
+				new TWEEN.Tween( object.rotation )
+					.to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+					.easing( TWEEN.Easing.Exponential.InOut )
+					.start();
+
+			}
+
+			new TWEEN.Tween( this )
+				.to( {}, duration * 2 )
+				.start();
+
+		}
+	
+	}
+	</script>
+	</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - molecules</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0;
+				
+				font-family: Arial;
+				overflow: hidden;
+			}
+			a {
+				color: #ffffff;
+			}
+			#menu2 {
+				position: absolute;
+				bottom: 20px;
+				width: 100%;
+				text-align: center;
+				padding: 0;
+				margin: 0;
+			}
+			#menu {
+				position: absolute;
+				top: 30px;
+				width: 100%;
+				text-align: center;
+				padding: 0;
+				margin: 0;
+			}
+			button {
+				color: rgb(0,0,0);
+				background: transparent;
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,1);
+			}
+
+			.label {
+				text-shadow: -1px 1px 1px rgb(0,0,0);
+				margin-left: 25px;
+			}
+
+		    .player {
+		          position: absolute;
+		          left: 0;
+		          top: 0;
+		          right: auto;
+		          bottom: auto;
+		          width: 100%;
+		          height: 100%;
+		          background-color: white;
+		      }
+		    #container {
+				position: absolute;
+
+			}
+			.center{
+				margin:0px auto;
+			}
+
+
+
+			#info {
+				position: absolute;
+				width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family: Monospace;
+				font-size: 13px;
+				font-weight: bold;
+				text-align: center;
+				z-index: 1;
+			}
+			.element {
+				width: 120px;
+				height: 160px;
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+				border: 1px solid rgba(127,255,255,0.25);
+				text-align: center;
+				cursor: default;
+			}
+
+			.element:hover {
+				box-shadow: 2px 2px 14px rgba(0,255,255,0.75);
+				border: .1px solid rgba(255,255,0,0.75);
+			}
+
+			.element .number {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+				font-size: 12px;
+				color: rgba(127,255,255,0.75);
+			}
+
+			.element .symbol {
+				position: absolute;
+				top: 40px;
+				left: 0px;
+				right: 0px;
+				font-size: 60px;
+				font-weight: bold;
+				color: rgba(255,255,255,0.75);
+				text-shadow: 0 0 10px rgba(0,255,255,0.95);
+			}
+
+			.element .details {
+				position: absolute;
+				bottom: 15px;
+				left: 0px;
+				right: 0px;
+				font-size: 12px;
+				color: rgba(127,255,255,0.75);
+			}
+		</style>
+	</head>
+	<body>
+		<video id="video" muted =true autoplay="autoplay" playsinline ></video>
+	    <div id="beforeLayer" style="position: absolute;width: 100%;height: 100%;background: url('./assets/textures/back.png')  no-repeat;background-position: bottom left;"></div>
+		<div id="container"  tabindex="10"><div id="containercss"  tabindex="10"></div></div>
+	 	<div id="menu2"></div>
+	    <div id="menu" >
+	     
+	        <input type="button" value="全屏" id="fullScreen">
+	        <input type="button" value="位移" id="transformp">
+	        <input type="button" value="旋转" id="transformr">
+    		<input type="button" value="缩放" id="transforms">
+    		<input type="button" value="动画" id="animalBt">
+	    </div>
+	<script src="assets/js/three.js"></script>
+	<script src="assets/js/loaders/deprecated/LegacyJSONLoader.js"></script>
+	<script src="assets/js/renderers/CSS2DRenderer.js"></script>
+
+	<script src="assets/js/controls/TransformControls.js"></script>
+		<!--加载fbx需要使用-->
+	<script src="assets/js/loaders/FBXLoader.js"></script>
+	
+	<script src="assets/js/libs/react.js"></script>
+    <script src="assets/js/libs/react-dom.js"></script>
+
+ 
+    <script src="assets/js/libs/ammo.js"></script>
+	<script src="assets/js/libs/dat.gui.min.js"></script>
+    <script src="assets/js/libs/jszip.min.js"></script>
+    <script src="assets/js/libs/inflate.min.js"></script>
+    <script src="assets/js/libs/gunzip.min.js"></script>
+
+
+    <script src="assets/js/libs/stats.min.js"></script>
+    <script src="assets/js/libs/SPE.js"></script>
+    <script src="assets/js/libs/VolumetricFire.js"></script>
+	<script src="assets/js/renderers/CSS3DRenderer.js"></script>
+	<script src="assets/js/libs/tween.min.js"></script>
+
+   <script src="./socket.io-client-2.0.4/dist/socket.io.js"></script>
+   <!--<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>-->
+   <script src="https://cdn.bootcdn.net/ajax/libs/adapterjs/0.15.5/adapter.min.js"></script>
+   
+   <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+   <script src="js/main.js"></script>
+   <script src="js/teacher.js"></script> 
+   <script src="js/server.js"></script>
+   <script src="js/server-teacher.js"></script>
+   <script src="js/server-client.js"></script>
+   <script src="js/server-clientPeer.js"></script>
+  	<script src="js/fenzi/pdbload.js"></script>
+  	<!-- 控制变换的代码-->
+  	<script src="js/fadongji/ComTransformControl.js"></script>
+	<script src="js/fenzi/common.js"></script>
+	<script src="js/shuibeng/shuibeng.js"></script>
+	<script>
+		var camera, scene, renderer, labelRenderer,raycaster;
+		const global={tempactivity:null};
+		const fadongji=true;
+		var controls;
+		var root,com3d;
+		var MOLECULES = {"乙醇": "ethanol.pdb","葡萄糖": "glucose.pdb","氧化铝": "Al2O3.pdb","盐": "nacl.pdb","石墨": "graphite.pdb"};
+			var loadModeIndex=0;
+	    var MOLECULESName = ["ethanol.pdb","glucose.pdb","Al2O3.pdb","nacl.pdb","graphite.pdb"];   
+	    var MOLECULESDesc = ["乙醇","葡萄糖","氧化铝","盐","石墨"];
+	    
+
+		var earth;
+		var offset = new THREE.Vector3();
+		var clock = new THREE.Clock();
+		var mixer;//动画mixer
+		var menu = document.getElementById( 'menu2' );
+		var w=constraints.video.width;//1920;//window.innerWidth
+		var h=constraints.video.height;//1080;//window.innerHeight
+
+		//pdbload 用于加载分子pdb模型，common通用方法不限制于分子页面
+		var pdbload,common;
+		var mousedown=false;//鼠标是否按下
+		var fenzi=new FenZi();
+		fenzi.init();
+		//渲染服务器处理碰撞检测后的数据
+		const asynRaycaster=function(json){
+			fenzi.asynRaycaster(json);
+		}
+	  	//添加或删除课桌
+	  	const desk=function (data){
+			fenzi.desk(data);
+	  	};
+	  	//渲染服务器处理root变换
+		const transformRootChange=function(json){
+			fenzi.transformRootChange(json);
+		}
+	  	//渲染服务端处理课桌变换 
+	  	const transformChange=function (data){
+	  		fenzi.transformChange(data);
+	  	}
+	  	//渲染服务端处理root缩放
+	  	const setRootScale=function(myscale){
+        	fenzi.setRootScale(myscale);
+        }
+        //渲染服务端处理上一步
+        const preStep=function(){
+			fenzi.preStep();
+        }
+         //渲染服务端处理下一步
+        const nextStep=function(){
+			fenzi.nextStep();
+        }
+        //渲染服务端处理上一章，或下一章引起的模型切换
+   		const loadMolecule= function ( url,teacherModeIndex ) {
+			fenzi.loadMolecule(url,teacherModeIndex);  
+		}
+		const transformChildChange=function(data){
+			fenzi.transformChildChange(data);
+		}
+		const animalShuiBeng=function(an){
+			fenzi.animalShuiBeng(an);
+		}
+		var cameraHelper,cameraEye,parent,splineCamera;
+		if(mode=="teacher"){
+			//const cameraPara={fov:78,px:0,py:2.5,	pz:3.5,	rx:-0.1,ry:0,rz:0};
+			//
+			//
+			parent = new THREE.Object3D();
+			scene.add( parent );
+
+			splineCamera = new THREE.PerspectiveCamera( 78, w / h, 0.001, 5 );
+			parent.add( splineCamera );
+
+
+
+			//cameraHelper = new THREE.CameraHelper( splineCamera );
+			cameraHelper = new THREE.CameraHelper( camera );
+			scene.add( cameraHelper );
+			cameraHelper.visible = cameraPara.cameraHelper;
+
+			//模型眼睛的圆点
+			//cameraEye = new THREE.Mesh( new THREE.SphereGeometry( 5 ), new THREE.MeshBasicMaterial( { color: 0xdddddd } ) );
+			//scene.add( cameraEye );
+
+			//cameraEye.visible = cameraPara.cameraHelper;
+
+			var gui = new dat.GUI( { width: 300 } );
+
+			var folderGeometry = gui.addFolder( '相机参数' );
+			folderGeometry.add( cameraPara, 'fov', 50, 110 ).step(0.1).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'px', -5, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'py', -5, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'pz', -5, 5 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'rx', -3.14, 3.14 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'ry', -3.14, 3.14 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.add( cameraPara, 'rz', -3.14, 3.14 ).step(0.001).onChange( function( value ) { changeCameraPara(); } );
+			folderGeometry.open();
+
+			var folderCamera = gui.addFolder( '虚拟相机中心' );
+			folderCamera.add( cameraPara, 'ground').onChange( function( value ) { changeCameraPara(); } );
+			folderCamera.open();
+		}
+		/**
+		 * 修改相机参数
+		 * @param  {[type]} param [description]
+		 * @return {[type]}       [description]
+		 */
+		const changeCameraPara=function(param){
+				if(mode=="server"&&param){
+
+				cameraPara.px=param.px;
+				cameraPara.py=param.py;
+				cameraPara.pz=param.pz;
+				cameraPara.rx=param.rx;
+				cameraPara.ry=param.ry;
+				cameraPara.rz=param.rz;
+				cameraPara.zoom=param.zoom;
+				cameraPara.fov = param.fov;
+				cameraPara.ground=param.ground;		
+			}else{
+				var json={
+					event:"changeCameraPara",
+					param:cameraPara,
+				}
+				//debugger;
+				teacherDataChanger(json);
+			}
+			var tempcamera=camera;//splineCamera;
+			//var tempcamera=splineCamera;
+			tempcamera.fov = cameraPara.fov;
+			tempcamera.position.x = cameraPara.px;
+			tempcamera.position.y = cameraPara.py;
+			tempcamera.position.z = cameraPara.pz;
+			tempcamera.rotation.x =cameraPara.rx;
+			tempcamera.rotation.y =cameraPara.ry;
+			tempcamera.rotation.z =cameraPara.rz;
+			tempcamera.zoom =cameraPara.zoom;
+			if(cameraPara.ground){
+				fenzi.addGroundGrid();
+			}else
+				fenzi.removeGroundGrid();
+
+			tempcamera.updateProjectionMatrix();
+			//renderer.render(parent, splineCamera);
+			renderer.render(scene, tempcamera);
+			if(cameraHelper)
+				cameraHelper.update();
+		}
+		const animateCamera=function(){	
+			cameraHelper.visible = cameraPara.cameraHelper;
+			//cameraEye.visible = cameraPara.cameraHelper;
+			cameraHelper.update();
+		}
+////==========================================元素周期表============
+
+	</script>
+	</body>
+</html>

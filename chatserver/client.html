@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+
+		<title>WebRTC实践信令服务</title>
+		<!--<script src="../javascript/trace.js"></script>-->
+		<script src="./socket.io-client-2.0.4/dist/socket.io.js"></script>
+		<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+		<script type="text/javascript">
+			$.extend({
+				myio: {
+					id: null,
+					socket: null,
+					connect: function(action) {
+						var curObj = this;
+						this.socket = io("http://192.168.10.61:8800");
+						this.socket.on('ready', function(id, persons) {
+						
+							curObj.id = id;
+							console.log($("#sname").val() + ' 连接成功！');
+							showPersons(persons);
+							action(persons);
+								//$("#outDiv").innerHTML($("#sname").val() + ' 连接成功！');
+						});
+						this.socket.on('change', function(persons) {
+							showPersons(persons);
+							action(persons);
+							//$("#outDiv").innerHTML("change:");
+						});
+
+						function showPersons(persons) {
+							var onlineUser = '在线用户：';
+							persons.forEach(element => {
+								onlineUser = onlineUser + JSON.stringify(element) + ",";
+							});
+							console.log(onlineUser);
+							$("#outDiv").html(onlineUser);
+						}
+					},
+					receive: function(callback) {
+						this.socket.on('message', function(message) {
+							callback(message);
+						});
+					},
+					send: function(conent, toid) {
+						var body = {
+							to: toid,
+							type: 'text',
+							content: conent
+						}
+						this.socket.emit('message', body);
+					},
+					disconnect: function() {
+						if(this.socket != null) {
+							this.socket.emit('bye');
+							this.socket = null;
+						}
+					}
+				}
+			});
+		</script>
+		<script type="text/javascript">
+			$(function() {
+				onunload =$.myio.disconnect;
+				$("#btnConn").click(function() {
+					$.myio.connect(function(person) {
+						$("#users").empty();
+						$.each(person, function() {
+							if(this.id != $.myio.id) {
+								$("#users").append('<input type="radio" id="' + this.id + '" value=' + this.id + ' name="g"><label for="' + this.id + '">' + this.id + '</label>');
+							}
+						});
+					});
+					$.myio.receive(function(body) {
+						console.log("收到：" + JSON.stringify(body));
+						
+						$("#outDiv").html("收到：" + JSON.stringify(body));
+					});
+				});
+				$("#btnSend").click(function() {
+					$.myio.send($("#sconent").val(), $("input[name='g']:checked").val());
+				});
+			})
+		</script>
+	</head>
+	<body>
+		<h1>WebRTC实践信令服务</h1>
+		<fieldset>
+			<legend>信令</legend>
+			<table border="0" style="width: 100%;">
+				<tr>
+					<td>服务：</td>
+					<td><input id="sserver" type="text" value="ws://192.168.10.61:8800" style="width: 97%;" /></td>
+					<td><input id="btnConn" type="button" value="连接" /></td>
+				</tr>
+				<tr>
+					<td>姓名：</td>
+					<td><input id="sname" style="width: 97%;" type="text" /></td>
+				</tr>
+				<tr>
+					<td>用户：</td>
+					<td>
+						<div id="users"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>内容：</td>
+					<td><input id="sconent" type="text" style="width: 97%;" /></td>
+					<td><input id="btnSend" type="button" value="发送" /></td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset>
+			<legend>运行日志</legend>
+			<div id="outDiv"></div>
+		</fieldset>
+	</body>
+</html>

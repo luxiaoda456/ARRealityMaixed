@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <title>Shadow Editor Viewer</title>
+
+    <style>
+        .player {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: auto;
+            bottom: auto;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+        #menu {
+        position: absolute;
+        top: 30px;
+        width: 100%;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+</head>
+
+<body>
+    <!--注意必须加muted否则视频可能无法播放（貌似是因为上次的声音没有停止）-->
+   
+  <video id="video" muted =true autoplay="autoplay" playsinline style="position: absolute;width: 50%; height: 100%;background: antiquewhite;"></video>
+  <video id="video1" muted =true autoplay="autoplay" playsinline style="position: absolute;width: 50%; height: 100%;background: antiquewhite;right: 0px;"></video>
+  <script src="./socket.io-client-2.0.4/dist/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+   <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+   <script src="js/main.js"></script>
+   <script src="js/clientcamera.js"></script>   
+
+
+   <script>
+
+    </script>
+     <div id="menu" >
+          <input type="button" value="位置定位" id="preChapter">
+    </div>
+</body>
+
+</html>

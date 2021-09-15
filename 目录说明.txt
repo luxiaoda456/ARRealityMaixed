@@ -1,0 +1,8 @@
+chatserver：负责webrtc前期令牌协商交换的服务，并且可以发广播，使用socketio编写。
+web：
+fenzi.html：教学页面，fenzi.html，分子是分子结构的教程包含模型切换、旋转、选择
+1、fenzi.html?mode=server:   渲染端服负责服务端画面显示
+2、fenzi.html?mode=teacher: 教师端
+3、client.html:                        学生端
+4、clientcamera.html:             相机采集端  -独立html
+5、js/fenzi 分子脚本处理

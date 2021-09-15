@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <title>Shadow Editor Viewer</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link href="build/ShadowEditor.css" rel="stylesheet" />
+    <style>
+        .player {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: auto;
+            bottom: auto;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!--注意必须加muted否则视频可能无法播放（貌似是因为上次的声音没有停止）-->
+    <video id="video" muted =true autoplay="autoplay" style="position: absolute;width: 100%; height: 100%;"></video>
+    <div id="beforeLayer" style="position: relative;width: 100%;height: 100%;background: url('./assets/textures/back.png')  no-repeat;background-position: bottom left;"></div>
+    <div id="container" tabindex="10"></div>
+    <div id="menu" style="position: absolute;width:300px;left: 50%;top: 10px;margin-left: -150px;">
+        <input type="button" value="上一章" id="preChapter">
+        <input type="button" value="下一章" id="nextChapter">
+        <input type="button" value="上一步" id="preStep">
+        <input type="button" value="下一步" id="nextStep">
+    </div>
+    <script src="assets/js/libs/react.js"></script>
+    <script src="assets/js/libs/react-dom.js"></script>
+
+    <script src="assets/js/three.js"></script>
+    <script src="assets/js/libs/ammo.js"></script>
+
+    <script src="assets/js/libs/jszip.min.js"></script>
+    <script src="assets/js/libs/inflate.min.js"></script>
+    <script src="assets/js/libs/gunzip.min.js"></script>
+
+    <script src="assets/js/libs/stats.min.js"></script>
+    <script src="assets/js/libs/SPE.js"></script>
+    <script src="assets/js/libs/VolumetricFire.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+    <script src="build/ShadowEditor.js"></script>
+    <script>
+
+       $("#preChapter").click(function(){
+             var myscript=app.event.events[0];
+             myscript.preChapter(true);
+        });
+        $("#nextChapter").click(function(){
+             var myscript=app.event.events[0];
+             myscript.nextChapter(true);
+        });
+        $("#preStep").click(function(){
+             var myscript=app.event.events[0];
+             myscript.preStep(true);
+        });
+        $("#nextStep").click(function(){
+             var myscript=app.event.events[0];
+             myscript.nextStep(true);
+        });
+        let app = null;
+
+        const getQueryString = name => {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        };
+
+        const start = () => {
+            app = new Shadow.Player(document.querySelector('#container'), {
+                server: location.origin,
+                enableThrowBall: false,
+            });
+
+            let sceneID = getQueryString('sceneID');
+            let sceneFile = getQueryString('sceneFile');
+	let mode = getQueryString('mode');
+            if(mode=="teacher"){
+                $("#menu").show();
+            }else{
+                $("#menu").hide();
+
+            }
+            // 发布场景自动把`<%SceneID%>`替换成真实场景ID，不再需要加`SceneID`或`SceneFile`参数
+            if (!sceneFile) {
+                sceneFile = '<%SceneID%>';
+            }
+
+            if (sceneID) { // 通过/api/Scene/Load?ID=sceneID获取场景数据
+                fetch(`${app.options.server}/api/Scene/Load?ID=${sceneID}`).then(response => {
+                    if (response.ok) {
+                        response.json().then(json => {
+                            if (json.Code === 200) {
+                                app.start(JSON.stringify(json.Data));
+                            }
+                        });
+                    }
+                });
+            } else if (sceneFile) { // 通过/Scene/sceneID.txt获取场景数据（导出用）
+                fetch(`${app.options.server}/Scene/${sceneFile}.txt`).then(response => {
+                    if (response.ok) {
+                        response.json().then(json => {
+                            app.start(JSON.stringify(json));
+                        });
+                    }
+                });
+            } else {
+                alert('Lack sceneID or sceneFile query params, scene load failed.');
+            }
+        };
+
+        window.onload = function () {
+            Ammo().then(AmmoLib => {
+                window.Ammo = AmmoLib;
+                start();
+         
+            });
+        };
+
+
+ 
+    </script>
+</body>
+
+</html>

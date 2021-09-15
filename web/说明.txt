@@ -1,0 +1,6 @@
+0、教学页面，fenzi.html，index.html两个教程分子是分子结构的教程包含模型切换、旋转、选择。index.html只有一个人物动画没有做服务端同步
+1、“?mode=server” server端服负责服务端画面显示渲染
+2、client端 学生端  -独立html
+3、“?mode=server”teacher 教师端
+4、cameraclient相机采集端  -独立html
+5、js/fenzi 分子脚本处理
